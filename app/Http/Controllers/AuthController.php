@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -27,13 +32,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user = User::create([
-            'nombre' => $request->nombre,
-            'apellido' => $request->apellido,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'vendedor',
-        ]);
+        $user = $this->userService->registerUser($request->all());
 
         return response()->json([
             'token' => $user->createToken('api_token')->plainTextToken,
@@ -55,9 +54,9 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $token = $this->userService->authenticateUser($request->email, $request->password);
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$token) {
             return response()->json([
                 'message' => 'Credenciales incorrectas',
                 'errors' => ['email' => ['Las credenciales no son correctas.']]
@@ -65,14 +64,15 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'token' => $user->createToken('api_token')->plainTextToken,
+            'token' => $token,
             'message' => 'Inicio de sesión exitoso'
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $this->userService->logoutUser($request->user());
+
         return response()->json(['message' => 'Sesión cerrada correctamente']);
     }
 }
