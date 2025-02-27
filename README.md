@@ -30,3 +30,37 @@ Content-Type: application/json
     "email": "juan@example.com",
     "password": "123456"
 }
+
+### Crear un producto
+POST /api/products
+Content-Type: application/json
+Authorization: Bearer {TOKEN}
+
+{
+    "sku": "P001",
+    "nombre": "Producto de Prueba",
+    "precio_unitario": 10.99,
+    "stock": 50
+}
+
+### Listar todos los productos 
+GET /api/products
+Authorization: Bearer {TOKEN}
+
+### Obtener un producto por id
+GET /api/products/1
+Authorization: Bearer {TOKEN}
+
+### Actualizar un producto 
+PUT /api/products/1
+Content-Type: application/json
+Authorization: Bearer {TOKEN}
+
+{
+    "precio_unitario": 12.99,
+    "stock": 40
+}
+
+### Eliminar un producto, esto solo funciona para un admin
+DELETE /api/products/1
+Authorization: Bearer {TOKEN}

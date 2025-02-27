@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -10,18 +11,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin-only', function () {
-            return response()->json(['message' => 'Bienvenido, Admin']);
-        });
-    });
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
 
-    Route::middleware('role:vendedor')->group(function () {
-        Route::get('/vendedor-only', function () {
-            return response()->json(['message' => 'Bienvenido, Vendedor']);
-        });
+    Route::middleware('role:admin')->group(function () {
+        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     });
 });
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
