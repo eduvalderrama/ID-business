@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('cliente_email')->nullable();
             $table->foreignId('vendedor_id')->constrained('users')->onDelete('cascade');
             $table->decimal('monto_total', 10, 2);
+            $table->integer('cantidad');
             $table->timestamps();
         });
     }

@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SalesExport;
+use Carbon\Carbon;
 
 class SaleController extends Controller
 {
@@ -34,6 +37,7 @@ class SaleController extends Controller
 
         try {
             $montoTotal = 0;
+            $cantidadTotal = 0;
             foreach ($request->productos as $producto) {
                 $product = Product::findOrFail($producto['id']);
 
@@ -45,6 +49,7 @@ class SaleController extends Controller
                 $product->save();
 
                 $montoTotal += $product->precio_unitario * $producto['cantidad'];
+                $cantidadTotal += $producto['cantidad'];
             }
 
             $venta = Sale::create([
@@ -53,6 +58,7 @@ class SaleController extends Controller
                 'cliente_identificacion_tipo' => $request->cliente_identificacion_tipo,
                 'cliente_identificacion' => $request->cliente_identificacion,
                 'cliente_email' => $request->cliente_email,
+                'cantidad' => $cantidadTotal,
                 'vendedor_id' => auth()->id(),
                 'monto_total' => $montoTotal,
             ]);
@@ -69,6 +75,38 @@ class SaleController extends Controller
                 'message' => 'Error registrando la venta',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function report(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'format' => 'required|in:json,xlsx',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+        $ventas = Sale::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        if ($ventas->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron ventas en el rango de fechas'], 404);
+        }
+        
+        if ($request->format === 'json') {
+            return response()->json($ventas);
+        } elseif ($request->format === 'xlsx') {
+            return Excel::download(new SalesExport($ventas), 'reporte_ventas.xlsx');
         }
     }
 }
