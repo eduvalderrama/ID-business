@@ -11,7 +11,7 @@ Creamos nuestro archivo.env y copiamos lo que tenemos dentro del archivo .env.ex
 Podemos probarlas en PostMan
 
 ### Registro de usuario
-POST http://localhost:8000/api/register
+POST http://localhost/api/register
 Content-Type: application/json
 
 {
@@ -32,7 +32,7 @@ Content-Type: application/json
 }
 
 ### Crear un producto
-POST /api/products
+POST http://localhost/api/products
 Content-Type: application/json
 Authorization: Bearer {TOKEN}
 
@@ -44,15 +44,15 @@ Authorization: Bearer {TOKEN}
 }
 
 ### Listar todos los productos 
-GET /api/products
+GET http://localhost/api/products
 Authorization: Bearer {TOKEN}
 
 ### Obtener un producto por id
-GET /api/products/1
+GET http://localhost/api/products/1
 Authorization: Bearer {TOKEN}
 
 ### Actualizar un producto 
-PUT /api/products/1
+PUT http://localhost/api/products/1
 Content-Type: application/json
 Authorization: Bearer {TOKEN}
 
@@ -62,5 +62,21 @@ Authorization: Bearer {TOKEN}
 }
 
 ### Eliminar un producto, esto solo funciona para un admin
-DELETE /api/products/1
+DELETE http://localhost/api/products/1
 Authorization: Bearer {TOKEN}
+
+### Crear una venta
+POST http://localhost/api/ventas
+Authorization: Bearer {TOKEN}
+{
+    "cliente_nombre": "Juan Pérez",
+    "cliente_identificacion_tipo": "DNI",
+    "cliente_identificacion": "12345678",
+    "cliente_email": "juan.perez@email.com",
+    "productos": [
+        {
+            "id": 1,
+            "cantidad": 2
+        }
+    ]
+}
