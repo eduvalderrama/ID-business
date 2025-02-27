@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExcelService
 {
-    public function downloadSalesReport(Collection $collection, string $fileName): BinaryFileResponse
+    public function downloadReport(Collection $collection, string $fileName): BinaryFileResponse
     {
         return Excel::download(new SalesExport($collection), $fileName);
     }
