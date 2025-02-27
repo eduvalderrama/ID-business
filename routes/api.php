@@ -19,5 +19,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+        Route::post('/reporte-ventas', [SaleController::class, 'report']);
     });
 });

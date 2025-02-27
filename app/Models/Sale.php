@@ -16,7 +16,8 @@ class Sale extends Model
         'cliente_identificacion',
         'cliente_email',
         'vendedor_id',
-        'monto_total'
+        'monto_total',
+        'cantidad'
     ];
 
     public function vendedor()

@@ -7,7 +7,7 @@ Creamos nuestro archivo.env y copiamos lo que tenemos dentro del archivo .env.ex
 ## Para correr las migraciones corremos el comando
 ./vendor/bin/sail artisan migrate
 
-## Para probar las apis del Auth
+## Para probar las apis
 Podemos probarlas en PostMan
 
 ### Registro de usuario
@@ -19,7 +19,7 @@ Content-Type: application/json
     "apellido": "Pérez",
     "email": "juan@example.com",
     "password": "123456",
-    "role": "admin"
+    "role": "admin" || "vendedor"
 }
 
 ### Login 
@@ -70,7 +70,7 @@ POST http://localhost/api/ventas
 Authorization: Bearer {TOKEN}
 {
     "cliente_nombre": "Juan Pérez",
-    "cliente_identificacion_tipo": "DNI",
+    "cliente_identificacion_tipo": "DNI" || "RUC",
     "cliente_identificacion": "12345678",
     "cliente_email": "juan.perez@email.com",
     "productos": [
@@ -80,3 +80,13 @@ Authorization: Bearer {TOKEN}
         }
     ]
 }
+
+### Para probar el reporte
+POST http://localhost/api/reporte-ventas
+Authorization: Bearer {TOKEN}
+{
+  "start_date": "2025-01-01",
+  "end_date": "2025-02-27",
+  "format": "xlsx" || "json"
+}
+Probando en PostMan no se descarga automaticamente debe darle en save to file y se tendra el archivo correctamente
